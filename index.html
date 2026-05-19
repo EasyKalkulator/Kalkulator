@@ -2779,13 +2779,11 @@ function printMedLink(){
 
 
 function genRestoreLink(obj){
-  // Koder kalkyletilstanden som base64 JSON – lenken åpner kalkulatoren med alle felt forhåndsutfylt
+  // Alltid pek på GitHub Pages – fungerer uansett hvem som åpner PDF-en
   try {
     const json = JSON.stringify(obj);
     const b64  = btoa(unescape(encodeURIComponent(json)));
-    // Hent filnavnet til kalkulatoren (bruker window.location for lokal fil)
-    const base = window.location.href.split('?')[0].split('#')[0];
-    return base + '?restore=' + b64;
+    return 'https://easykalkulator.github.io/Kalkulator/?restore=' + b64;
   } catch(e){ return ''; }
 }
 
