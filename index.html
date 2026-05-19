@@ -592,6 +592,7 @@ input[type=number]{text-align:right}
   .section-title { font-size: 10px !important; padding: 4px 8px !important; margin-bottom: 8px !important; }
   /* Vis kun kalkyle-fanen, ikke referanse */
   #tab-ny { display: block !important; }
+  #tab-arkiv { display: none; }
   #tab-arkiv, #tab-referanse { display: none !important; }
   .tab-nav { display: none !important; }
   /* Radio/checkbox display */
@@ -644,7 +645,7 @@ input[type=number]{text-align:right}
 <!-- TABS -->
 <div class="tabs">
   <div class="tab active" onclick="showTab('ny')"><i class="ti ti-plus" style="font-size:14px;vertical-align:-2px;margin-right:5px"></i>Ny kalkyle</div>
-  
+  <div class="tab" onclick="showTab('arkiv')"><i class="ti ti-folder" style="font-size:14px;vertical-align:-2px;margin-right:5px"></i>Arkiv</div>
   <div class="tab" onclick="showTab('referanse')"><i class="ti ti-book" style="font-size:14px;vertical-align:-2px;margin-right:5px"></i>Referanseprosjekter</div>
 </div>
 
@@ -1154,12 +1155,30 @@ input[type=number]{text-align:right}
 </div>
 
 <!-- Gjenopprettingslenke – vises kun ved utskrift/print -->
-<div class="print-restore-block" id="print-restore-block" style="margin-top:28px;break-before:page">
-  <a id="print-restore-link" href="#" style="display:block;background:#0B6E4F;color:#fff;text-decoration:none;padding:18px 24px;border-radius:8px;text-align:center;font-family:Arial,sans-serif">
-    <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;opacity:.75;margin-bottom:6px">Easy Kalkulator · Etterkalkyle</div>
-    <div style="font-size:18px;font-weight:700;letter-spacing:.5px">GJENÅPNE FOR ETTERKALKYLE</div>
-    <div style="font-size:10px;opacity:.8;margin-top:6px">Klikk for å åpne kalkylen med alle verdier forhåndsutfylt · Fyll inn faktiske timer · Skriv ut ny PDF</div>
-  </a>
+<div class="print-restore-block" id="print-restore-block" style="margin-top:28px">
+  <div style="border:2px solid #0B6E4F;border-radius:8px;overflow:hidden;font-family:Arial,sans-serif">
+    <div style="background:#0B6E4F;color:#fff;padding:14px 20px">
+      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;opacity:.75;margin-bottom:4px">Easy Kalkulator</div>
+      <div style="font-size:17px;font-weight:700">ETTERKALKYLE – SLIK GJØR DU DET</div>
+    </div>
+    <div style="padding:16px 20px;background:#fff">
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:10px 14px;align-items:start">
+        <div style="background:#0B6E4F;color:#fff;font-weight:700;font-size:12px;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
+        <div style="font-size:12px;color:#1c1c1a">Åpne nettleseren på <strong>din PC</strong> og gå til:<br><strong style="font-size:13px;color:#0B6E4F">easykalkulator.github.io/Kalkulator</strong></div>
+        <div style="background:#0B6E4F;color:#fff;font-weight:700;font-size:12px;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</div>
+        <div style="font-size:12px;color:#1c1c1a">Logg inn og finn kalkylen i <strong>Arkiv</strong> ved hjelp av kalkyle-ID nedenfor</div>
+        <div style="background:#0B6E4F;color:#fff;font-weight:700;font-size:12px;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</div>
+        <div style="font-size:12px;color:#1c1c1a">Fyll inn <strong>faktiske timer</strong> i etterkalkyleseksjonen – ny DB beregnes automatisk</div>
+        <div style="background:#0B6E4F;color:#fff;font-weight:700;font-size:12px;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">4</div>
+        <div style="font-size:12px;color:#1c1c1a">Trykk <strong>«Skriv ut / Print til PDF»</strong> for ferdig etterkalkyle-PDF</div>
+      </div>
+      <div style="margin-top:14px;padding:10px 14px;background:#f2faf6;border-radius:6px;border-left:3px solid #0B6E4F">
+        <div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Kalkyle-ID</div>
+        <div id="print-kalkyle-id" style="font-size:20px;font-weight:700;color:#0B6E4F;letter-spacing:2px">–</div>
+        <div style="font-size:10px;color:#888;margin-top:2px">Kalkylen er lagret lokalt i nettleseren på din PC</div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- 13. ETTERKALKYLE -->
@@ -1248,7 +1267,7 @@ input[type=number]{text-align:right}
 </div><!-- /tab-ny -->
 
 <!-- ======= ARKIV ======= -->
-<div id="tab-arkiv" class="hidden" style="display:none!important">
+<div id="tab-arkiv" class="hidden">
   <div class="section">
     <div class="section-title"><i class="ti ti-folder-open"></i>Lagrede kalkyler</div>
     <div id="arkiv-list">
@@ -1890,10 +1909,13 @@ function setVal(id,v){const el=document.getElementById(id);if(el)el.textContent=
 function fmt(n){return Math.round(n).toLocaleString('nb-NO')}
 
 function showTab(t){
-  const tabs=['ny','referanse'];
+  const tabs=['ny','arkiv','referanse'];
   document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',tabs[i]===t));
   document.getElementById('tab-ny').classList.toggle('hidden',t!=='ny');
+  document.getElementById('tab-arkiv').classList.remove('hidden');
+  document.getElementById('tab-arkiv').style.display=t==='arkiv'?'':'none';
   document.getElementById('tab-referanse').classList.toggle('hidden',t!=='referanse');
+  if(t==='arkiv') renderArkiv();
 }
 
 function getProdType(){return document.querySelector('input[name="produkttype"]:checked').value}
@@ -2690,7 +2712,70 @@ async function genPDF(k){
 
 
 async function lastgenPDF(i){if(kalkyler[i])await genPDF(kalkyler[i]);}
-function slettKalkyle(i){kalkyler.splice(i,1);localStorage.setItem('ef_kalkyler',JSON.stringify(kalkyler));}
+function slettKalkyle(i){
+  if(!confirm('Slette denne kalkylen fra arkivet?')) return;
+  kalkyler.splice(i,1);
+  localStorage.setItem('ef_kalkyler',JSON.stringify(kalkyler));
+  renderArkiv();
+}
+
+function renderArkiv(){
+  const el=document.getElementById('arkiv-list');
+  if(!el) return;
+  if(!kalkyler.length){
+    el.innerHTML='<div class="empty-state"><i class="ti ti-inbox"></i>Ingen kalkyler lagret ennå.<br><small style="font-size:12px">Trykk «Skriv ut / Print til PDF» for å lagre en kalkyle.</small></div>';
+    return;
+  }
+  const ptMap={'plugg':'Plugg','plugg-finish':'P+Finish','plugg-form':'P&F','direkte':'Direkteform'};
+  el.innerHTML=kalkyler.map((k,i)=>`
+    <div style="padding:14px 16px;border:1px solid var(--gray-border);border-radius:8px;margin-bottom:10px;background:#fff;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center">
+      <div style="cursor:pointer" onclick="lastInnKalkyle(${i})">
+        <div style="font-weight:700;font-size:14px;color:var(--ink)">${k.kunde||'Ukjent'} – ${k.prosjekt||'–'}</div>
+        <div style="font-size:12px;color:var(--text-hint);margin-top:2px">${k.dato} · ${ptMap[k.produkttype]||k.produkttype} · ${k.m2} m² · ${k.qfinish}</div>
+        <div style="font-size:11px;font-family:monospace;color:var(--teal);margin-top:4px;font-weight:700;letter-spacing:1px">${k.id}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-weight:700;font-size:15px;color:var(--ink)">${fmt(k.totalSalg)} NOK</div>
+        <div style="font-size:12px;color:${(k.dbPct||0)>=20?'var(--teal)':'var(--amber)'}">DB: ${(k.dbPct||0).toFixed(1)}%</div>
+        <button class="btn btn-secondary" style="padding:4px 10px;font-size:11px;margin-top:6px;color:var(--red)" onclick="slettKalkyle(${i})"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`).join('');
+}
+
+function lastInnKalkyle(i){
+  const k=kalkyler[i];
+  if(!k) return;
+  if(k.kunde) document.getElementById('kunde').value=k.kunde;
+  if(k.prosjekt) document.getElementById('prosjekt').value=k.prosjekt;
+  if(k.part) document.getElementById('part').value=k.part;
+  if(k.notat) document.getElementById('notat').value=k.notat;
+  if(k.m2) document.getElementById('m2-input').value=k.m2;
+  if(k.arbKost) document.getElementById('arb-kost').value=k.arbKost;
+  if(k.arbSalg) document.getElementById('arb-salg').value=k.arbSalg;
+  if(k.cncKost) document.getElementById('cnc-kost').value=k.cncKost;
+  if(k.cncSalg) document.getElementById('cnc-salg').value=k.cncSalg;
+  const kvmEl=document.getElementById('kvm-pris');if(kvmEl&&k.kvmAvtalt)kvmEl.value=k.kvmAvtalt;
+  const agEl=document.getElementById('agent-pct');if(agEl&&k.agentPct)agEl.value=k.agentPct*100;
+  if(k.qOverride) document.getElementById('q-override').value=k.qOverride;
+  if(k.produkttype){const el=document.querySelector(`input[name="produkttype"][value="${k.produkttype}"]`);if(el)el.checked=true;}
+  if(k.areal){const el=document.querySelector(`input[name="areal"][value="${k.areal}"]`);if(el)el.checked=true;}
+  if(k.qfinish){const el=document.querySelector(`input[name="qfinish"][value="${k.qfinish}"]`);if(el)el.checked=true;}
+  if(k.cncGeo){const el=document.querySelector(`input[name="cncgeo"][value="${k.cncGeo}"]`);if(el)el.checked=true;}
+  if(k.tPlugg){document.getElementById('t-plugg').value=k.tPlugg;document.getElementById('t-plugg').dataset.manuell='1';}
+  if(k.tFinish){document.getElementById('t-finish').value=k.tFinish;document.getElementById('t-finish').dataset.manuell='1';}
+  if(k.tForm){document.getElementById('t-form').value=k.tForm;document.getElementById('t-form').dataset.manuell='1';}
+  if(k.etter2){
+    const e=k.etter2;
+    if(e.tPlugg) document.getElementById('ek2-plugg').value=e.tPlugg;
+    if(e.tFinish) document.getElementById('ek2-finish').value=e.tFinish;
+    if(e.tForm) document.getElementById('ek2-form').value=e.tForm;
+    if(e.tCNC) document.getElementById('ek2-cnc').value=e.tCNC;
+    if(e.ekstra) document.getElementById('ek2-ekstra').value=e.ekstra;
+    if(e.dato) document.getElementById('ek2-dato').value=e.dato;
+  }
+  showTab('ny');
+  setTimeout(()=>{updateUI();calcAll();showToast('Kalkyle lastet inn: '+k.id);},200);
+}
 
 function apneEtterkalkyle(idx){
   aktivKalkyle=idx;
@@ -2742,8 +2827,9 @@ function printMedLink(){
   const c=window._lastCalc;
   if(!c||!(c.kalkylpris>0)){showToast('Fyll inn areal og timer først');return;}
   const e2=window._lastEtter2;
+  const id='EF-'+new Date().getFullYear()+'-'+String(Date.now()).slice(-4);
   const obj={
-    id:Date.now(),
+    id,
     dato:new Date().toLocaleDateString('nb-NO'),
     kunde:getStr('kunde'),prosjekt:getStr('prosjekt'),part:getStr('part'),
     notat:document.getElementById('notat').value||'',
@@ -2771,10 +2857,39 @@ function printMedLink(){
       faktKost:e2.faktKost,salg:e2.salg,db:e2.fDb,dbPct:e2.fDbP,
     }:null,
   };
-  const link=genRestoreLink(obj);
-  const linkEl=document.getElementById('print-restore-link');
-  if(linkEl&&link) linkEl.href=link;
+  // Lagre lokalt
+  try{kalkyler.unshift(obj);localStorage.setItem('ef_kalkyler',JSON.stringify(kalkyler));}catch(e){}
+  // Vis ID i utskriftsblokken
+  const idEl=document.getElementById('print-kalkyle-id');
+  if(idEl) idEl.textContent=id;
   window.print();
+}
+
+// Enkel QR-kode generator (reed-solomon ikke nødvendig for korte URL-er via GitHub Pages)
+function genQR(url, canvas, callback){
+  const size = 180;
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = function(){
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0,0,size,size);
+    ctx.drawImage(img, 0, 0, size, size);
+    if(callback) callback();
+  };
+  img.onerror = function(){
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#f5f5f5';
+    ctx.fillRect(0,0,size,size);
+    ctx.fillStyle = '#555';
+    ctx.font = '9px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Skann ikke tilgjengelig', size/2, size/2-6);
+    ctx.fillText('offline', size/2, size/2+8);
+    if(callback) callback();
+  };
+  // Google Charts QR API (gratis, ingen API-nøkkel)
+  img.src = 'https://chart.googleapis.com/chart?chs=180x180&cht=qr&chl=' + encodeURIComponent(url) + '&choe=UTF-8&chld=M|2';
 }
 
 
